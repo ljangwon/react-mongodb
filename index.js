@@ -9,25 +9,31 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(bodyParser.json());
 
+const config = require('./config/key');
+
 const mongoose = require('mongoose');
-const mongodbinfo =
-	'mongodb+srv://jakeleanco:abcd1234@cluster0.ipqd3hk.mongodb.net/?retryWrites=true&w=majority&appName=cluster0';
+const mongodbinfo = '';
 mongoose
-	.connect(mongodbinfo)
+	.connect(config.mongoURI, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useCreateIndex: true,
+		useFindAndModify: false,
+	})
 	.then(() => console.log('MongoDB Connectied..'))
 	.catch((err) => console.log(err));
 
 app.get('/', function (req, res) {
-	res.send('Hello World!');
+	res.send('Hello World! 새해 복많이 받으세요');
 });
 
 app.post('/register', (req, res) => {
 	const user = new User(req.body);
-	user.save((err, doc) => {
+	user.save((err, userInfo) => {
 		if (err)
 			//
 			return res.json({ sucess: false, err });
-		return res.status(200).json({ sucess: true });
+		return res.status(200).json({ sucess: true, userInfo });
 	});
 });
 
