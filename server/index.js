@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const port = '3001';
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -8,7 +7,6 @@ const { User } = require('./models/User');
 const { auth } = require('./middleware/auth');
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -30,11 +28,15 @@ app.get('/', function (req, res) {
 	res.send('Hello World! 새해 복많이 받으세요');
 });
 
+app.get('/api/hello', (req, res) => {
+	res.send('안녕하세요');
+});
+
 app.post('/api/users/register', (req, res) => {
 	const user = new User(req.body);
-	user.save((err, userInfo) => {
-		if (err) return res.json({ sucess: false, err });
-		return res.status(200).json({ sucess: true, userInfo });
+	user.save((err, user) => {
+		if (err) return res.json({ registerSucess: false, err });
+		return res.status(200).json({ registerSucess: true, user });
 	});
 });
 
@@ -88,9 +90,11 @@ app.get('/api/users/logout', auth, (req, res) => {
 	User.findOneAndUpdate({ _id: req.user._id }, { token: '' }, (err, user) => {
 		if (err) return res.json({ sucess: false, err });
 		return res.status(200).json({
-			sucess: true,
+			logoutSucess: true,
 			user: user,
 		});
 	});
 });
+
+const port = '3001';
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
